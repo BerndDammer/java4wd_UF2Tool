@@ -1,4 +1,4 @@
-package gen;
+package consoletest;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -9,7 +9,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.LinkedList;
 
-public class UF2BufferFileChain extends LinkedList<ByteBuffer> {
+import genuf2.MemoryRegion;
+import genuf2.UF2Statics;
+
+public class UF2BufferFileChainConsole extends LinkedList<ByteBuffer> {
 	/**
 	 * 
 	 */
@@ -55,8 +58,8 @@ public class UF2BufferFileChain extends LinkedList<ByteBuffer> {
 		}
 	}
 
-	public static UF2BufferFileChain fromMemoryRegion(MemoryRegion memoryRegion) {
-		UF2BufferFileChain result = new UF2BufferFileChain();
+	public static UF2BufferFileChainConsole fromMemoryRegion(MemoryRegion memoryRegion) {
+		UF2BufferFileChainConsole result = new UF2BufferFileChainConsole();
 		result.clear();
 		//memoryRegion.getByteBuffer().reset();
 		//memoryRegion.getByteBuffer().flip();

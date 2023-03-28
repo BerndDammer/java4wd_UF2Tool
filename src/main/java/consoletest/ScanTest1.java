@@ -1,11 +1,10 @@
-package scantest;
+package consoletest;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import RP2040.ParameterMemoryRegion;
-import gen.UF2BufferFileChain;
 
 public class ScanTest1 {
 	private static String mySSID;
@@ -24,7 +23,7 @@ public class ScanTest1 {
 
 	private static void doit() throws IOException {
 		// TODO Auto-generated method stub
-		UF2BufferFileChain uf2file = new UF2BufferFileChain();
+		UF2BufferFileChainConsole uf2file = new UF2BufferFileChainConsole();
 		uf2file.readFile(new File("test.uf2"));
 		System.out.println("");
 		uf2file.dumpIt();
@@ -44,7 +43,7 @@ public class ScanTest1 {
 		while (b.position() < 128)
 			b.put((byte) 0);
 
-		UF2BufferFileChain uf = UF2BufferFileChain.fromMemoryRegion(parameterMemoryRegion);
+		UF2BufferFileChainConsole uf = UF2BufferFileChainConsole.fromMemoryRegion(parameterMemoryRegion);
 		uf.writeFile(new File("para.uf2"));
 	}
 }

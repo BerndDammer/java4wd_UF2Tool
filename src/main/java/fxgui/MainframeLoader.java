@@ -47,8 +47,8 @@ public class MainframeLoader extends GridPane {
 		mainframeControllerValues.uf2ChainList = uf2List.itemsProperty();
 		mainframeControllerValues.ssid = ssid.textProperty();
 		mainframeControllerValues.pwd = pwd.textProperty();
-		mainframeControllerValues.onLoadFile = menuFile.onActionProperty();
 		mainframeControllerValues.onNewFile = newFile.onActionProperty();
+		mainframeControllerValues.onLoadFile = openFile.onActionProperty();
 		mainframeControllerValues.onSaveFile = saveFile.onActionProperty();
 	}
 

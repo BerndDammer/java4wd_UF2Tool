@@ -1,4 +1,4 @@
-package gen;
+package genuf2;
 
 public class UF2Statics {
 	public static final int UF2_CHUNK_SIZE = 512;

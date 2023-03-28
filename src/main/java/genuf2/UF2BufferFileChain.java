@@ -1,17 +1,16 @@
-package gen;
+package genuf2;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
 import java.util.LinkedList;
 
 import javafx.collections.ObservableList;
 
-public class UF2BufferFileChain2 extends LinkedList<ByteBuffer> {
+public class UF2BufferFileChain extends LinkedList<ByteBuffer> {
 	/**
 	 * 
 	 */
@@ -19,19 +18,15 @@ public class UF2BufferFileChain2 extends LinkedList<ByteBuffer> {
 
 	public void readFile(File file) throws IOException {
 		if (file.length() % UF2Statics.UF2_CHUNK_SIZE != 0) {
-			error("FileSize not multiple of 512");
+			throw new IOException("FileSize not multiple of 512");
 		}
-		FileInputStream fileInputStream = new FileInputStream(file);
-		DataInputStream dataInputStream = new DataInputStream(fileInputStream);
-		long chunk_count = file.length() / (long) UF2Statics.UF2_CHUNK_SIZE;
-		byte[] bs;
-		while (chunk_count-- > 0) {
-			bs = new byte[UF2Statics.UF2_CHUNK_SIZE];
-			dataInputStream.read(bs);
-			add(ByteBuffer.wrap(bs));
+		final byte[] allBytes = Files.readAllBytes(file.toPath());
+
+		for (int start = 0; start < allBytes.length; start += UF2Statics.UF2_CHUNK_SIZE) {
+			final ByteBuffer bb = ByteBuffer.allocate(UF2Statics.UF2_CHUNK_SIZE);
+			bb.put(allBytes, start, UF2Statics.UF2_CHUNK_SIZE);
+			add(bb);
 		}
-		dataInputStream.close();
-		fileInputStream.close();
 	}
 
 	public void writeFile(File file) throws IOException {
@@ -43,20 +38,16 @@ public class UF2BufferFileChain2 extends LinkedList<ByteBuffer> {
 		fileOutputStream.close();
 	}
 
-	private void error(String string) {
-		System.out.println("------------------" + string);
-	}
-
-	public void dumpIt() {
-		for (final ByteBuffer b : this) {
-			b.order(ByteOrder.LITTLE_ENDIAN);
-			b.position(0);
-			System.out.printf("%H %H F:%H A:%H SIZE:%H n:%H ", b.getInt(), b.getInt(), b.getInt(), b.getInt(),
-					b.getInt(), b.getInt());
-			System.out.printf("NB:%H FID:%H\n", b.getInt(), b.getInt());
-
-		}
-	}
+//	public void dumpIt() {
+//		for (final ByteBuffer b : this) {
+//			b.order(ByteOrder.LITTLE_ENDIAN);
+//			b.position(0);
+//			System.out.printf("%H %H F:%H A:%H SIZE:%H n:%H ", b.getInt(), b.getInt(), b.getInt(), b.getInt(),
+//					b.getInt(), b.getInt());
+//			System.out.printf("NB:%H FID:%H\n", b.getInt(), b.getInt());
+//
+//		}
+//	}
 
 	public void dumpIt(ObservableList<String> value) {
 		for (final ByteBuffer b : this) {
@@ -69,8 +60,8 @@ public class UF2BufferFileChain2 extends LinkedList<ByteBuffer> {
 		}
 	}
 
-	public static UF2BufferFileChain2 fromMemoryRegion(MemoryRegion memoryRegion) {
-		UF2BufferFileChain2 result = new UF2BufferFileChain2();
+	public static UF2BufferFileChain fromMemoryRegion(MemoryRegion memoryRegion) {
+		UF2BufferFileChain result = new UF2BufferFileChain();
 		result.clear();
 		// memoryRegion.getByteBuffer().reset();
 		// memoryRegion.getByteBuffer().flip();
