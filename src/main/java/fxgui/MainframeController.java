@@ -74,6 +74,13 @@ public class MainframeController extends MainframeControllerValues {
 		final UF2BufferFileChain u2c = UF2BufferFileChain.fromMemoryRegion(mr);
 		try {
 			u2c.writeFile(selectedFile);
+
+			final Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.initModality(Modality.APPLICATION_MODAL);
+			alert.initOwner(stage);
+			alert.getDialogPane().setContentText("File :  " + selectedFile + " written");
+			alert.getDialogPane().setHeaderText("success");
+			alert.showAndWait();
 		} catch (IOException e) {
 			final Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.initModality(Modality.APPLICATION_MODAL);

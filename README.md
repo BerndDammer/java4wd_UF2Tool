@@ -2,7 +2,7 @@
 
 Trainee project
 
-java console application
+java application
 
 ######################################
 

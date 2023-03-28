@@ -33,7 +33,6 @@ public class UF2BufferFileChain extends LinkedList<ByteBuffer> {
 
 	public void writeFile(File file) throws IOException {
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
-		byte[] bs;
 		for (final ByteBuffer b : this) {
 			fileOutputStream.write(b.array());
 		}
@@ -55,8 +54,6 @@ public class UF2BufferFileChain extends LinkedList<ByteBuffer> {
 		UF2BufferFileChain result = new UF2BufferFileChain();
 		result.clear();
 		memoryRegion.getByteBuffer().clear(); // reset pointer  ... content stays
-		// memoryRegion.getByteBuffer().flip();
-		//memoryRegion.getByteBuffer().position(0);
 		final byte[] b256 = new byte[UF2Statics.MEM_CHUNK_SIZE];
 		long numBlocks = memoryRegion.getByteBuffer().capacity() / (long) UF2Statics.MEM_CHUNK_SIZE;
 		int targetAddr = memoryRegion.getBaseAddress();
