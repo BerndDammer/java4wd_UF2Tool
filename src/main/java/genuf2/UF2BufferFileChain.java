@@ -16,7 +16,8 @@ public class UF2BufferFileChain extends LinkedList<ByteBuffer> {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public void readFile(File file) throws IOException {
+	public static UF2BufferFileChain fromFile(File file) throws IOException {
+		UF2BufferFileChain result = new UF2BufferFileChain();
 		if (file.length() % UF2Statics.UF2_CHUNK_SIZE != 0) {
 			throw new IOException("FileSize not multiple of 512");
 		}
@@ -25,8 +26,9 @@ public class UF2BufferFileChain extends LinkedList<ByteBuffer> {
 		for (int start = 0; start < allBytes.length; start += UF2Statics.UF2_CHUNK_SIZE) {
 			final ByteBuffer bb = ByteBuffer.allocate(UF2Statics.UF2_CHUNK_SIZE);
 			bb.put(allBytes, start, UF2Statics.UF2_CHUNK_SIZE);
-			add(bb);
+			result.add(bb);
 		}
+		return result;
 	}
 
 	public void writeFile(File file) throws IOException {
@@ -37,17 +39,6 @@ public class UF2BufferFileChain extends LinkedList<ByteBuffer> {
 		}
 		fileOutputStream.close();
 	}
-
-//	public void dumpIt() {
-//		for (final ByteBuffer b : this) {
-//			b.order(ByteOrder.LITTLE_ENDIAN);
-//			b.position(0);
-//			System.out.printf("%H %H F:%H A:%H SIZE:%H n:%H ", b.getInt(), b.getInt(), b.getInt(), b.getInt(),
-//					b.getInt(), b.getInt());
-//			System.out.printf("NB:%H FID:%H\n", b.getInt(), b.getInt());
-//
-//		}
-//	}
 
 	public void dumpIt(ObservableList<String> value) {
 		for (final ByteBuffer b : this) {
@@ -63,9 +54,9 @@ public class UF2BufferFileChain extends LinkedList<ByteBuffer> {
 	public static UF2BufferFileChain fromMemoryRegion(MemoryRegion memoryRegion) {
 		UF2BufferFileChain result = new UF2BufferFileChain();
 		result.clear();
-		// memoryRegion.getByteBuffer().reset();
+		memoryRegion.getByteBuffer().clear(); // reset pointer  ... content stays
 		// memoryRegion.getByteBuffer().flip();
-		memoryRegion.getByteBuffer().position(0);
+		//memoryRegion.getByteBuffer().position(0);
 		final byte[] b256 = new byte[UF2Statics.MEM_CHUNK_SIZE];
 		long numBlocks = memoryRegion.getByteBuffer().capacity() / (long) UF2Statics.MEM_CHUNK_SIZE;
 		int targetAddr = memoryRegion.getBaseAddress();

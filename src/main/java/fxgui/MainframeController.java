@@ -2,19 +2,19 @@ package fxgui;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
+import java.nio.ByteBuffer;
 
+import RP2040.Flash;
 import gen.Util;
+import genuf2.MemoryRegion;
 import genuf2.UF2BufferFileChain;
-import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class MainframeController extends MainframeControllerValues {
 
@@ -27,51 +27,84 @@ public class MainframeController extends MainframeControllerValues {
 
 		//////////////////////////////
 		/////////// Action Connections
-//		transmitSpeed.addListener(this::onChangedSpeed);
-//		onActionPropertyStartButton.setValue(this::onStart);
-//		onActionPropertyStopButton.setValue(this::onStop);
 		onLoadFile.setValue(this::onLoadFile);
 		onNewFile.setValue(this::onNewFile);
+		onSaveFile.setValue(this::onSaveFile);
 	}
 
-	public void onLoadFile(ActionEvent event) {
-		uf2ChainList.getValue().clear();
-		uf2ChainList.getValue().add("KLhduiwhfduiewhfuiw");
+	private void onLoadFile(ActionEvent event) {
+		clearAll();
 
 		final FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open UF2 File");
 		fileChooser.getExtensionFilters().add(new ExtensionFilter("UF2 Files", "*.uf2"));
 		fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", "*.*"));
-//		fileChooser.setInitialDirectory( Files.readAllBytes(null));
-		fileChooser.setInitialDirectory( Util.getCurrentDir());
+		fileChooser.setInitialDirectory(Util.getCurrentDir());
 		final File selectedFile = fileChooser.showOpenDialog(stage);
+
 		if (selectedFile != null) {
-			UF2BufferFileChain uf2file = new UF2BufferFileChain();
 			try {
-				uf2file.readFile(selectedFile);
-				System.out.println("");
+				final UF2BufferFileChain uf2file = UF2BufferFileChain.fromFile(selectedFile);
 				uf2file.dumpIt(uf2ChainList.getValue());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				final Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.initModality(Modality.APPLICATION_MODAL);
+				alert.initOwner(stage);
+				alert.getDialogPane().setContentText(e.getMessage());
+				alert.getDialogPane().setHeaderText("Problem by loading File");
+				alert.showAndWait();
 			}
 		}
 	}
 
-	public void onNewFile(ActionEvent event) {
+	private void onNewFile(ActionEvent event) {
+		clearAll();
+	}
+
+	private void onSaveFile(ActionEvent event) {
+		
+		final FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Write UF2 File");
+		fileChooser.getExtensionFilters().add(new ExtensionFilter("UF2 Files", "*.uf2"));
+		fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", "*.*"));
+		fileChooser.setInitialDirectory(Util.getCurrentDir());
+		final File selectedFile = fileChooser.showOpenDialog(stage);
+		
+		final MemoryRegion mr = getMemFromPara();
+		final UF2BufferFileChain u2c = UF2BufferFileChain.fromMemoryRegion(mr);
+		try {
+			u2c.writeFile(selectedFile);
+		} catch (IOException e) {
+			final Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.initModality(Modality.APPLICATION_MODAL);
+			alert.initOwner(stage);
+			alert.getDialogPane().setContentText(e.getMessage());
+			alert.getDialogPane().setHeaderText("Problem by writing File");
+			alert.showAndWait();
+		}
+	}
+
+	private final void clearAll() {
 		uf2ChainList.getValue().clear();
+		ssid.setValue("");
+		pwd.setValue("");
 	}
+	
+	private MemoryRegion getMemFromPara()
+	{
+		final MemoryRegion result = new MemoryRegion(Flash.PARA_BASE, Flash.PARA_SIZE);
+		ByteBuffer b = result.getByteBuffer();
+		b.clear();
 
-	private void onTransmitt() {
-	}
+		b.put(ssid.getValue().getBytes());
+		while (b.position() < 64)
+			b.put((byte) 0);
 
-	public void onStop(ActionEvent event) {
-	}
+		b.put(pwd.getValue().getBytes());
+		while (b.position() < 128)
+			b.put((byte) 0);
 
-	void onNewWorkerState(ObservableValue<? extends State> observable, State oldValue, State newValue) {
-	}
-
-	public void onChangedSpeed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
+		return result;
 	}
 
 	public GridPane getRootNode() {
