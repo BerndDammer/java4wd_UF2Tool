@@ -8,6 +8,7 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.util.LinkedList;
 
+import RP2040.ParameterMemoryRegion;
 import javafx.collections.ObservableList;
 
 public class UF2BufferFileChain extends LinkedList<ByteBuffer> {
@@ -50,10 +51,37 @@ public class UF2BufferFileChain extends LinkedList<ByteBuffer> {
 		}
 	}
 
+	public ParameterMemoryRegion getParameterMemoryRegion() {
+		final ParameterMemoryRegion result = new ParameterMemoryRegion();
+		result.getByteBuffer().clear();
+
+		int expectedAddress = result.getBaseAddress();
+
+		for (ByteBuffer bb : this) {
+
+			int addr = bb.getInt(12);
+			int size = bb.getInt(16);
+			if (addr != expectedAddress)
+				return null;
+
+			result.getByteBuffer().put( //
+					expectedAddress - result.getBaseAddress(), //
+					bb, //
+					8 * 4, //
+					size //
+			);
+			expectedAddress += size;
+
+		}
+		if (expectedAddress != result.getBaseAddress() + result.getSize())
+			return null;
+		return result;
+	}
+
 	public static UF2BufferFileChain fromMemoryRegion(MemoryRegion memoryRegion) {
 		UF2BufferFileChain result = new UF2BufferFileChain();
 		result.clear();
-		memoryRegion.getByteBuffer().clear(); // reset pointer  ... content stays
+		memoryRegion.getByteBuffer().clear(); // reset pointer ... content stays
 		final byte[] b256 = new byte[UF2Statics.MEM_CHUNK_SIZE];
 		long numBlocks = memoryRegion.getByteBuffer().capacity() / (long) UF2Statics.MEM_CHUNK_SIZE;
 		int targetAddr = memoryRegion.getBaseAddress();

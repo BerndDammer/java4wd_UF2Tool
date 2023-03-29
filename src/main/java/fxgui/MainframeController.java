@@ -2,11 +2,9 @@ package fxgui;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
-import RP2040.Flash;
+import RP2040.ParameterMemoryRegion;
 import gen.Util;
-import genuf2.MemoryRegion;
 import genuf2.UF2BufferFileChain;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
@@ -46,6 +44,12 @@ public class MainframeController extends MainframeControllerValues {
 			try {
 				final UF2BufferFileChain uf2file = UF2BufferFileChain.fromFile(selectedFile);
 				uf2file.dumpIt(uf2ChainList.getValue());
+				final ParameterMemoryRegion pmr = uf2file.getParameterMemoryRegion();
+				if(pmr != null)
+				{
+					ssid.setValue(pmr.getSSID());
+					pwd.setValue(pmr.getPWD());
+				}
 			} catch (IOException e) {
 				final Alert alert = new Alert(Alert.AlertType.ERROR);
 				alert.initModality(Modality.APPLICATION_MODAL);
@@ -62,15 +66,15 @@ public class MainframeController extends MainframeControllerValues {
 	}
 
 	private void onSaveFile(ActionEvent event) {
-		
+
 		final FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Write UF2 File");
 		fileChooser.getExtensionFilters().add(new ExtensionFilter("UF2 Files", "*.uf2"));
 		fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", "*.*"));
 		fileChooser.setInitialDirectory(Util.getCurrentDir());
 		final File selectedFile = fileChooser.showOpenDialog(stage);
-		
-		final MemoryRegion mr = getMemFromPara();
+
+		final ParameterMemoryRegion mr = getMemFromPara();
 		final UF2BufferFileChain u2c = UF2BufferFileChain.fromMemoryRegion(mr);
 		try {
 			u2c.writeFile(selectedFile);
@@ -96,20 +100,12 @@ public class MainframeController extends MainframeControllerValues {
 		ssid.setValue("");
 		pwd.setValue("");
 	}
-	
-	private MemoryRegion getMemFromPara()
-	{
-		final MemoryRegion result = new MemoryRegion(Flash.PARA_BASE, Flash.PARA_SIZE);
-		ByteBuffer b = result.getByteBuffer();
-		b.clear();
 
-		b.put(ssid.getValue().getBytes());
-		while (b.position() < 64)
-			b.put((byte) 0);
+	private ParameterMemoryRegion getMemFromPara() {
+		final ParameterMemoryRegion result = new ParameterMemoryRegion();
 
-		b.put(pwd.getValue().getBytes());
-		while (b.position() < 128)
-			b.put((byte) 0);
+		result.setSSID(ssid.getValue());
+		result.setPWD(pwd.getValue());
 
 		return result;
 	}

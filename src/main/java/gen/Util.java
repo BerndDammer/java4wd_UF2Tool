@@ -7,7 +7,6 @@ public class Util {
 	// separated because too much variations how to get
 	public static final File getCurrentDir()
 	{
-//		return FileSystems.getDefault().getPath(".").toFile();
 		return Path.of(".").toFile();
 	}
 }
