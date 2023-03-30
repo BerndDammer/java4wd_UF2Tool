@@ -21,7 +21,7 @@ public class MainframeController extends MainframeControllerValues {
 
 	public MainframeController(final Stage stage) {
 		this.stage = stage;
-		rootNode = new MainframeLoader(this);
+		rootNode = new MainframeLoader((MainframeControllerValues)this);
 
 		//////////////////////////////
 		/////////// Action Connections
@@ -72,7 +72,7 @@ public class MainframeController extends MainframeControllerValues {
 		fileChooser.getExtensionFilters().add(new ExtensionFilter("UF2 Files", "*.uf2"));
 		fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", "*.*"));
 		fileChooser.setInitialDirectory(Util.getCurrentDir());
-		final File selectedFile = fileChooser.showOpenDialog(stage);
+		final File selectedFile = fileChooser.showSaveDialog(stage);
 
 		final ParameterMemoryRegion mr = getMemFromPara();
 		final UF2BufferFileChain u2c = UF2BufferFileChain.fromMemoryRegion(mr);
