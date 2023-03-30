@@ -5,6 +5,11 @@ import genuf2.MemoryRegion;
 public class ParameterMemoryRegion extends MemoryRegion {
 	public ParameterMemoryRegion() {
 		super(Flash.PARA_BASE, Flash.PARA_SIZE);
+
+		getByteBuffer().clear();
+		while (getByteBuffer().hasRemaining()) {
+			getByteBuffer().put((byte) 0XFF);
+		}
 	}
 
 	public void setSSID(final String ssid) {
@@ -23,7 +28,7 @@ public class ParameterMemoryRegion extends MemoryRegion {
 		final StringBuilder sb = new StringBuilder();
 		byte b;
 		while ((b = getByteBuffer().get()) != 0) {
-			sb.append((char)b);
+			sb.append((char) b);
 		}
 		return sb.toString();
 	}
@@ -46,7 +51,7 @@ public class ParameterMemoryRegion extends MemoryRegion {
 		final StringBuilder sb = new StringBuilder();
 		byte b;
 		while ((b = getByteBuffer().get()) != 0) {
-			sb.append((char)b);
+			sb.append((char) b);
 		}
 		return sb.toString();
 	}
