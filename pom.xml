@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>PicoTools</groupId>
 	<artifactId>UF2Tool</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.2.1-DEV</version>
 	<name>UF2Tool</name>
 	<description>UF2Tool</description>
 	<properties>
