@@ -8,29 +8,30 @@
 	<name>UF2Tool</name>
 	<description>UF2Tool</description>
 	<properties>
-		<maven.compiler.source>19</maven.compiler.source>
-		<maven.compiler.target>19</maven.compiler.target>
-		<!-- maven.compiler.release>19</maven.compiler.release dont work too -->
-		<!--java.version>19</java.version   this does not work-->
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.release>17</maven.compiler.release>
+		<java.version>17</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-base -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-base</artifactId>
-			<version>19.0.2.1</version>
+			<version>17.0.8</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-controls -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
-			<version>19.0.2.1</version>
+			<version>17.0.8</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-graphics -->
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-graphics</artifactId>
-			<version>19.0.2.1</version>
+			<version>17.0.8</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-maven-plugin -->
 		<dependency>
